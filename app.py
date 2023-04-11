@@ -1,10 +1,24 @@
 from flask import Flask, render_template, request, jsonify
 import os
 from Neo4J_API import InstacartAPI
-from Final_Project_Driver import preprocessing
+from Neo4J_Driver import preprocessing
 import traceback
 
+"""
+IMPORTANT: Make sure to change Neo4J API credentials below 
 
+How to run app and use
+1. go to terminal and go to directory of Git folder
+2. run "python app.py"
+3. After code is running (should see this message in terminal: 
+
+"Use a production WSGI server instead.
+ * Debug mode: on
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+ * Restarting with watchdog (fsevents)"
+ 
+ 4. Go to http://127.0.0.1:5000/ to access UI
+"""
 app = Flask(__name__)
 
 api = InstacartAPI(uri='neo4j://localhost:7687', username='neo4j', password='theflash')
