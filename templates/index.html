@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instacart Recommender</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Instacart Recommender</h1>
+    <form id="cart-form">
+        <label for="items">Enter Items (separated by commas):</label>
+        <input type="text" id="items" name="items" required>
+        <button type="submit">Get Recommendations</button>
+    </form>
+    <h2>Recommended Items:</h2>
+    <p id="error-message" style="display: none; color: red;">An error occurred. Please try again.</p>
+    <ul id="recommendations">
+    </ul>
+    <script>
+        $(document).ready(function() {
+            $("#cart-form").on("submit", function(e) {
+                e.preventDefault();
+                let items = $("#items").val().split(',').map(item => item.trim());
+                $.ajax({
+                    type: "POST",
+                    url: "/",
+                    data: JSON.stringify({items: items}),
+                    contentType: "application/json",
+                    success: function(data) {
+                        $("#recommendations").empty();
+                        $("#error-message").hide();
+                        data.recommendations.forEach(rec => {
+                            $("#recommendations").append(`<li>${rec["recommended.product_name"]} (Frequency: ${rec["frequency"]})</li>`);
+                        });
+                    },
+                    error: function() {
+                        $("#recommendations").empty();
+                        $("#error-message").show();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
