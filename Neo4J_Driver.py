@@ -1,6 +1,6 @@
 """
 @author: Justin Woo
-@file  : Neo4J_tester.py
+@file  : Neo4J_Driver.py
 Driver file for Neo4J API
 """
 import pandas as pd

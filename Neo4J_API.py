@@ -1,6 +1,6 @@
 """
 Justin Woo
-Spotify Database API for Neo4J
+Instacart Database API for Neo4J
 """
 from neo4j import GraphDatabase
 
