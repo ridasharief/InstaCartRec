@@ -87,26 +87,9 @@ def preprocessing(orders, products, departments, aisle, num_orders):
 
 
 def main():
-    #api = InstacartAPI(uri=os.environ["uri"], username=os.environ["username"], password=os.environ["password"])
     api = InstacartAPI(uri='neo4j://localhost:7687', username='neo4j', password='theflash')
-    # Preprocessing step
-    df = preprocessing('order_products__train.csv', 'products.csv', 'departments.csv', 'aisles.csv', 2000)
+    print(api.aisle_recommendation("bread"))
 
-    # Save the nodes and edges data frames to CSV files (to run on your device, change the directory appropriately)
-    df.to_csv('/Users/justinwoo/neo4j-community-5.5.0/import/instacart.csv', index=False)
-
-    # Neo4J Commands
-
-    # Reset database
-    api.reset_db()
-    # Load nodes
-    api.load_graph()
-
-    # Make recommendation
-    rec = api.recommend_item_to_cart(['Bulgarian Yogurt', 'Organic Whole String Cheese', 'Bag of Organic Bananas'])
-    print(rec)
-    # Close Connection
-    api.close()
 if __name__ == '__main__':
     main()
 

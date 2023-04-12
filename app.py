@@ -43,5 +43,13 @@ def get_recommendations():
         print(traceback.format_exc())
         return jsonify({"error": str(e)}), 500
 
+@app.route("/aisle", methods=["POST"])
+def aisle_recommendation():
+    data = request.get_json()
+    aisle = data.get("aisle")
+    recommendations = api.aisle_recommendation(aisle)
+    print("Aisle Recommendations:", recommendations)  # Add this line
+    return jsonify({"recommendations": recommendations})
+
 if __name__ == "__main__":
     app.run(debug=True)

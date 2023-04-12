@@ -68,6 +68,26 @@ class InstacartAPI:
             records = [dict(record) for record in result]
             return records
 
+    def aisle_recommendation(self, aisle):
+        """
+        Recommend items based on popularity of inputted aisle
+        Retrieve the 5 most popular items in the aisle of the inputted product with their counts
+
+        :param aisle(string): aisle
+        :return: recommendation(list): return 5 items:
+        """
+        with self.con.session() as session:
+            result = session.run("""
+                    MATCH (o:Order)-[:Ordered]->(p:Product)
+                    WHERE p.aisle = $aisle
+                    WITH p, count(o) as orderCount
+                    ORDER BY orderCount DESC
+                    LIMIT 5
+                    RETURN p.product_name as product, orderCount
+                """, aisle=aisle)
+
+            records = [dict(record) for record in result]
+            return records
 
     def close(self):
         """

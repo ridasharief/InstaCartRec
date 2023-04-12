@@ -17,6 +17,20 @@
     <p id="error-message" style="display: none; color: red;">An error occurred. Please try again.</p>
     <ul id="recommendations">
     </ul>
+
+    <!-- Add a new form for aisle recommendation -->
+    <h1>Aisle Recommender</h1>
+    <form id="aisle-form">
+        <label for="aisle">Enter Aisle:</label>
+        <input type="text" id="aisle" name="aisle" required>
+        <button type="submit">Get Aisle Recommendations</button>
+    </form>
+    <h2>Product Recommendations From Aisle:</h2>
+    <p id="aisle-error-message" style="display: none; color: red;">An error occurred. Please try again.</p>
+    <ul id="aisle-recommendations">
+    </ul>
+
+
     <script>
         $(document).ready(function() {
             $("#cart-form").on("submit", function(e) {
@@ -37,6 +51,31 @@
                     error: function() {
                         $("#recommendations").empty();
                         $("#error-message").show();
+                    }
+                });
+            });
+
+            // Add a new event listener for the aisle form
+            $("#aisle-form").on("submit", function(e) {
+                e.preventDefault();
+                let aisle = $("#aisle").val().trim();
+                $.ajax({
+                    type: "POST",
+                    url: "/aisle",
+                    data: JSON.stringify({aisle: aisle}),
+                    contentType: "application/json",
+                    success: function(data) {
+                        console.log("Success: ", data);
+                        $("#aisle-recommendations").empty();
+                        $("#aisle-error-message").hide();
+                        data.recommendations.forEach(rec => {
+                            $("#aisle-recommendations").append(`<li>${rec["product"]} (Count: ${rec["orderCount"]})</li>`);
+                        });
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.log("Error: ", textStatus, errorThrown);
+                        $("#aisle-recommendations").empty();
+                        $("#aisle-error-message").show();
                     }
                 });
             });
