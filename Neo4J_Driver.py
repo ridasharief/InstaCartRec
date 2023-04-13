@@ -111,7 +111,6 @@ def cosine_edges(df):
 
     # Filter out rows with similarity scores lower than the average
     filtered_similarity_df = long_similarity_df[long_similarity_df['cosine_similarity'] > threshold]
-
     return filtered_similarity_df
 
 def main():

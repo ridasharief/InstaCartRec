@@ -22,7 +22,7 @@ How to run app and use
 app = Flask(__name__)
 # Input your Neo4J credentials
 api = InstacartAPI(uri='neo4j://localhost:7687', username='neo4j', password='theflash')
-df = preprocessing('order_products__train.csv', 'products.csv', 'departments.csv', 'aisles.csv', 2000)
+df = preprocessing('order_products__train.csv', 'products.csv', 'departments.csv', 'aisles.csv', 1000)
 similarity = cosine_edges(df)
 
 # Save the nodes and edges data frames to CSV files (to run on your device, change the directory appropriately)
