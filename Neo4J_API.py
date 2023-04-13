@@ -31,17 +31,30 @@ class InstacartAPI:
         Loads csv file that is created in the python code
         :parameter: None
         :return: None
-            """
+        """
         with self.con.session() as session:
-            with self.con.session() as session:
-                result = session.run("""
-                LOAD CSV WITH HEADERS FROM 'file:///instacart.csv' AS row
-                MERGE (a:Order {order_id:row.order_id}) 
-                MERGE (b:Product {product_name: row.product_name, department: row.department, aisle: row.aisle})
-                MERGE (a)-[:Ordered]->(b)
-                """)
+            result = session.run("""
+            LOAD CSV WITH HEADERS FROM 'file:///instacart.csv' AS row
+            MERGE (a:Order {order_id:row.order_id}) 
+            MERGE (b:Product {product_name: row.product_name})
+            ON CREATE SET b.department = row.department, b.aisle = row.aisle
+            MERGE (a)-[:Ordered]->(b)
+            """)
 
+    def load_similarity_edge(self):
+        """
+        :parameter: None
+        :return: None
+        """
 
+        with self.con.session() as session:
+            result = session.run("""
+            LOAD CSV WITH HEADERS FROM "file:///similarity.csv" AS row
+            MATCH (p1:Product {product_name: row.product_1})
+            MATCH (p2:Product {product_name: row.product_2})
+            MERGE (p1)-[r:SIMILAR]->(p2)
+            SET r.cosine_similarity = toFloat(row.cosine_similarity);
+            """)
 
     def recommend_item_to_cart(self, cart):
         """
@@ -67,6 +80,25 @@ class InstacartAPI:
 
             records = [dict(record) for record in result]
             return records
+
+    def replacement_recommendation(self, product):
+        """
+        Recommend products based on the inputted product to simulate if an item is out of stock. Retrieves the top 3
+        product nodes with the highest cosine similarity in the edge connected to them
+        :param product(string): name of product that you want to find a substitute for
+        :return: top 3 product nodes with highest cosine similarity to it
+        """
+        with self.con.session() as session:
+            result = session.run("""
+                MATCH (p1:Product {product_name: $product_name})-[r:SIMILAR]->(p2:Product)
+                RETURN p2.product_name AS recommended_product, r.cosine_similarity AS similarity
+                ORDER BY r.cosine_similarity DESC
+                LIMIT 3
+            """, product_name=product)
+
+
+            records = [dict(record) for record in result]
+            return records if records else None
 
     def aisle_recommendation(self, aisle):
         """

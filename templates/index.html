@@ -17,7 +17,17 @@
     <p id="error-message" style="display: none; color: red;">An error occurred. Please try again.</p>
     <ul id="recommendations">
     </ul>
-
+    <!-- Add a new form for replacement recommendation -->
+    <h1>Replacement Recommender</h1>
+    <form id="replacement-form">
+        <label for="product">Enter Product:</label>
+        <input type="text" id="product" name="product" required>
+        <button type="submit">Get Replacement Recommendations</button>
+    </form>
+    <h2>Product Recommendations for Replacement:</h2>
+    <p id="replacement-error-message" style="display: none; color: red;">An error occurred. Please try again.</p>
+    <ul id="replacement-recommendations">
+    </ul>
     <!-- Add a new form for aisle recommendation -->
     <h1>Aisle Recommender</h1>
     <form id="aisle-form">
@@ -54,6 +64,34 @@
                     }
                 });
             });
+
+            // Add a new event listener for the replacement form
+            $("#replacement-form").on("submit", function(e) {
+            e.preventDefault();
+            let product = $("#product").val().trim();
+            $.ajax({
+                type: "POST",
+                url: "/replacement",
+                data: JSON.stringify({product: product}),
+                contentType: "application/json",
+                success: function(data) {
+                    let recommendations = data.recommendations;
+                    $("#replacement-recommendations").empty();
+                    if (recommendations.length === 0) {
+                        $("#replacement-error-message").show();
+                    } else {
+                        $("#replacement-error-message").hide();
+                        for (let i = 0; i < recommendations.length; i++) {
+                            let li = $("<li>").text(recommendations[i].recommended_product + " (similarity: " + recommendations[i].similarity.toFixed(2) + ")");
+                            $("#replacement-recommendations").append(li);
+                        }
+                    }
+                },
+                error: function() {
+                    $("#replacement-error-message").show();
+                }
+            });
+        });
 
             // Add a new event listener for the aisle form
             $("#aisle-form").on("submit", function(e) {
